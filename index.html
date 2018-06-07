@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="css/base.css">
+	<link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+	<div class="w">
+		<div class="main_tit">
+			顺序练习<span>车型：小车</span><span>科目：科目一</span>
+		</div>
+		<div class="main_con">+
+			<div class="question_type"></div>
+			<div class="question_box">
+				<div class="tittle_box">
+					
+				</div>
+				<div class="answer_box">
+					<ul class="answer_ul">
+						
+					</ul>
+					<div class="answer_torf">
+						<span class="answer_t"></span>
+						<b>为什么选 <i class="daan_x"></i>？</b>
+					</div>
+				</div			</div>
+		</div>
+		<div class="Btns">
+			<a href="javascript:;" id="next" class="green">下一题</a>
+			<a href="javascript:;" id="prev" class="green">上一题</a>
+			<a href="javascript:;" id="daanBtn" class="fff">本题解释</a>
+			<a href="javascript:;"class="fff">仿真考试</a>
+		</div>
+		<div class="page">
+			<span>答对：<i id="trueNum"></i>题</span>
+			<span>答错：<i id="falseNum"></i>题</span>
+			<span>正确率：<i id="baifen"></i>%</span>
+			<span>
+				共 <i>15</i> 题转到<input type="text" value="1" id="pageNum">题
+			</span>
+		</div>
+	</div>
+	<div class="grayBox">
+		
+	</div>
+	<script type="text/a" id="daan">
+		<div class="daan">
+			<div class="daan_top">
+				本题解释
+				<div class="close"></div>
+			</div>
+			<div class="dann_con">
+				<%= bestanswer %>  <a href="">>>本题讨论..</a>
+			</div>
+			<div class="daan_bo">
+				温馨提示：仿真界面、专家课程、无广告干扰，推荐使用：
+				<a href="">+ Vip仿真版</a>
+			</div>
+		</div>
+	</script>
+	<script type="text/a" id="tit">
+		<h3 class="tit_box">
+			<span class="pageNum"><%= id %></span>
+			/
+			<span class="allpage">15</span>
+			 &nbsp;
+			<span class="question_tit"><%= question %></span>
+		</h3>
+	</script>
+	<script type="text/a" id="tf">
+		<li>
+			<label>
+				<input type="radio" id="true" value="正确" name="answer" ta="1">&nbsp;&nbsp;正确
+			</label>
+		</li>
+		<li>
+			<label>
+				<input type="radio" id="false" value="错误" name="answer" ta="2">&nbsp;&nbsp;错误
+			</label>
+		</li>
+	</script>
+	<script type="text/b" id="chose">
+		<li>
+			<label>
+				<input type="radio" value="A" name="answer" ta="1">&nbsp;&nbsp;A：<%= a %>
+			</label>
+		</li>
+		<li>
+			<label>
+				<input type="radio" value="B" name="answer" ta="2">&nbsp;&nbsp;B：<%= b %>
+			</label>
+		</li>
+		<li>
+			<label>
+				<input type="radio" value="C" name="answer" ta="3">&nbsp;&nbsp;C：<%= c %>
+			</label>
+		</li>
+		<li>
+			<label>
+				<input type="radio" value="D" name="answer" ta="4">&nbsp;&nbsp;D：<%= d %>
+			</label>
+		</li>
+	</script>
+	<script src="js/jquery-1.12.3.min.js"></script>
+	<script src="js/underscore-min.js"></script>
+	<script>
+		var num = 1;//题号
+		var trueNum = 0;//答对的个数
+		var falseNum = 0;//答错的个数
+		var titCon = $("#tit").html()//题目
+		var tfCon = $("#tf").html();//判断题
+		var daanCon = $("#daan").html();//答案
+		var choseCon = $("#chose").html();//选择题
+		var tit_temp = _.template(titCon);//题目
+		var tf_temp = _.template(tfCon);//判断题
+		var chose_temp = _.template(choseCon);//单选题
+		var daan_temp = _.template(daanCon);//答案
+		get(1);
+		//下一题按钮点击事件
+		$("#next").click(function () {
+			if (num <= 14) {
+				num++;
+				get(num);
+			}else if(num >= 14){
+				num = 15;
+				alert("没有下一题了");
+			}
+		});
+		//上一题按钮点击事件
+		$("#prev").click(function () {
+			if (num >= 2) {
+				num--;
+				get(num);
+			}else if(num <= 1){
+				num = 1;
+				alert("没有上一题了");
+			}
+		});
+		//答案解析按钮点击事件
+		$("#daanBtn").click(function () {
+			$(".grayBox").css("display","block");
+			$(".close").click(function () {
+				$(".grayBox").css("display","none");
+			});
+		});
+		//跳转到多少题
+		$(document).keypress(function (event) {
+			num = $("#pageNum").val();
+			if (event.keyCode == 13) {
+				if (num>=1 && num<=15) {
+					get(num);
+				}else{
+					alert("没有这道题");
+				}
+			}
+		});
+		function get(num) {
+			$.get("php/json.php?questId="+num,function (data) {
+				var dataObj = typeof data == 'object' ? data:eval('('+data+')');
+				console.log(dataObj);
+				$(".tittle_box").children().remove();//清空上一题的题目
+				$(".answer_ul").children().remove();//删除上一题的选项
+				$(".daan").remove();//删除上一题的答案
+				$(".answer_torf").css("display","none");//让答案判断框隐藏
+				$("#pageNum").val(dataObj.id);//让页数的value改变
+				if (dataObj.Type == 1) {
+					//题目模板
+					var dataT = tit_temp(dataObj);
+					$(dataT).appendTo(".tittle_box");
+					//选项模板
+					var dataA = tf_temp(dataObj);
+					$(dataA).appendTo(".answer_ul");
+					$(".question_type").html("判断题");
+					//答案模板
+					var dataB = daan_temp(dataObj);
+					$(dataB).appendTo(".grayBox");
+					//判断所选答案是否正确
+					tf();
+
+				}else{
+					//题目模板
+					var dataT = tit_temp(dataObj);
+					$(dataT).appendTo(".tittle_box");
+					//ABCD的选项模板
+					var dataA = chose_temp(dataObj);
+					$(dataA).appendTo(".answer_ul");
+					$(".question_type").html("单选题");
+					//答案模板
+					var dataB = daan_temp(dataObj);
+					$(dataB).appendTo(".grayBox");
+					//判断单选题选择是否正确
+					tf();
+				}
+				//判断是否选对
+				function tf() {
+					$(".answer_ul label").on("click",function () {
+						var ta = $(this).find("input").attr("ta");//获取点击的input的ta属性值
+						if (dataObj.ta == ta) {
+							trueNum++;//答对一道题++一次
+							$("#trueNum").html(trueNum);//答对多少题
+							$(".answer_torf").css("display","block");//让判断盒子显示
+							$(".answer_torf span").html("恭喜你，答对了！");
+							$(".answer_torf span").addClass("answer_t").removeClass("answer_f");
+							$(".daan_x").html($(".answer_ul input[ta="+dataObj.ta+"]").val());
+
+							$(".answer_ul input[ta !="+ta+"]").attr("disabled","disabled");
+							$(".answer_ul label").off("click");
+							
+						}else{
+							falseNum++;
+							$("#falseNum").html(falseNum);//答错多少题
+							$(".answer_torf").css("display","block");//让判断盒子显示
+							$(".answer_torf span").html("您答错了！标准答案是："+$(".answer_ul input[ta="+dataObj.ta+"]").val());
+							$(".daan_x").html($(".answer_ul input[ta="+dataObj.ta+"]").val());
+							$(".answer_torf span").addClass("answer_f").removeClass("answer_t");
+							$(".answer_ul input[ta !="+ta+"]").attr("disabled","disabled");
+							$(".answer_ul label").off("click");
+
+						}
+						//正确率的计算
+						$("#baifen").html(((trueNum/(trueNum+falseNum))*100).toFixed(2));//toFixed(2)获取两位小数
+					});
+				}//tf
+			});//$.get
+		}//get
+		
+	</script>
+</body>
+</html>

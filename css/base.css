@@ -1,0 +1,55 @@
+*{
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+body{
+	color: rgb(17, 22, 27);
+}
+iframe{
+	border-width:0;
+	margin: 0;
+	padding: 0;
+}
+input{
+	outline: none;
+}
+.w{
+    width: 1190px;
+    margin: 0 auto;
+}
+.fl{
+    float: left;
+}
+.fr{
+    float: right;
+}
+.por{
+	position: relative;
+}
+.dib{
+	display: inline-block;
+}
+.db{
+	display: block;
+}
+i,em,b{
+    font-style: normal;
+}
+a{
+    text-decoration: none;
+    font-family: "微软雅黑";
+    font-weight: normal;
+    color: #000;
+}
+ul{
+    list-style: none;
+}
+.clearfix:before,.clearfix:after{
+    content:"";
+    display:table;
+}
+.clearfix:after{clear:both;}
+.clearfix{
+    *zoom:1;/*IE/7/6*/
+}
